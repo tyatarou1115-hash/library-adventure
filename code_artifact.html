@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ほんさがしアドベンチャー ～きみの「すき」をみつけよう！～</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome v6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Zen Maru Gothic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Zen Maru Gothic', sans-serif;
+            background: linear-gradient(135deg, #fef9c3 0%, #e0f2fe 50%, #fbcfe8 100%);
+            min-height: 100vh;
+        }
+
+        /* 3D push button interaction styling */
+        .btn-bounce {
+            transition: all 0.15s ease-out;
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.15);
+        }
+        .btn-bounce:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 rgba(0, 0, 0, 0.12);
+        }
+        .btn-bounce:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        /* Ruby styling adjustment */
+        ruby {
+            ruby-position: over;
+        }
+        rt {
+            font-size: 0.65em;
+            color: #4b5563;
+            font-weight: normal;
+        }
+
+        /* Print styles for window.print() */
+        @media print {
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-only-shadow-none {
+                box-shadow: none !important;
+                border: 2px solid #333 !important;
+            }
+            .print-page {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen text-slate-800 antialiased">
+
+    <header class="no-print bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-amber-100 shadow-sm">
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full bg-amber-400 flex items-center justify-center text-white text-xl shadow">
+                    <i class="fa-solid fa-compass"></i>
+                </div>
+                <h1 class="text-lg md:text-xl font-bold text-amber-900 tracking-wide">
+                    ほんさがしアドベンチャー
+                </h1>
+            </div>
+            <span class="text-xs md:text-sm font-medium bg-amber-100 text-amber-800 px-3 py-1 rounded-full border border-amber-200">
+                <i class="fa-solid fa-book-open mr-1"></i>としょかん たんけん
+            </span>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center">
+
+        <!-- 1. 学年選択画面 -->
+        <section id="grade-screen" class="bg-white/90 backdrop-blur rounded-3xl p-6 md:p-10 shadow-xl border-4 border-white text-center transition-all duration-300">
+            <div class="inline-block bg-amber-100 text-amber-800 px-4 py-1.5 rounded-full font-bold text-sm mb-4">
+                <i class="fa-solid fa-star text-amber-500 mr-1"></i> はじめに
+            </div>
+            <h2 class="text-2xl md:text-3xl font-black text-slate-800 mb-3 leading-snug">
+                なに学年ですか？
+            </h2>
+            <p class="text-slate-600 text-sm md:text-base mb-8">
+                がくねんにあわせた 「ほんさがし」 を はじめるよ！
+            </p>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+                <button onclick="selectGrade(1)" class="btn-bounce bg-emerald-400 hover:bg-emerald-500 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-emerald-600 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">1ねんせい</span>
+                    <span class="text-xs bg-emerald-600/40 px-2 py-0.5 rounded-full">ていがくねん</span>
+                </button>
+                <button onclick="selectGrade(2)" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-emerald-700 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">2ねんせい</span>
+                    <span class="text-xs bg-emerald-700/40 px-2 py-0.5 rounded-full">ていがくねん</span>
+                </button>
+                <button onclick="selectGrade(3)" class="btn-bounce bg-sky-400 hover:bg-sky-500 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-sky-600 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">3年生</span>
+                    <span class="text-xs bg-sky-600/40 px-2 py-0.5 rounded-full">中学年</span>
+                </button>
+                <button onclick="selectGrade(4)" class="btn-bounce bg-sky-500 hover:bg-sky-600 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-sky-700 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">4年生</span>
+                    <span class="text-xs bg-sky-700/40 px-2 py-0.5 rounded-full">中学年</span>
+                </button>
+                <button onclick="selectGrade(5)" class="btn-bounce bg-indigo-500 hover:bg-indigo-600 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-indigo-700 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">5年生</span>
+                    <span class="text-xs bg-indigo-700/40 px-2 py-0.5 rounded-full">高学年</span>
+                </button>
+                <button onclick="selectGrade(6)" class="btn-bounce bg-indigo-600 hover:bg-indigo-700 text-white font-black py-4 px-3 rounded-2xl border-b-4 border-indigo-800 flex flex-col items-center justify-center gap-1">
+                    <span class="text-2xl md:text-3xl">6年生</span>
+                    <span class="text-xs bg-indigo-800/40 px-2 py-0.5 rounded-full">高学年</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- 2. 診断質問画面 -->
+        <section id="quiz-screen" class="hidden bg-white/95 backdrop-blur rounded-3xl p-5 md:p-8 shadow-xl border-4 border-white transition-all duration-300">
+            <!-- プログレスバー -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="question-number" class="font-black text-amber-800 text-base md:text-lg"></span>
+                    <span id="grade-badge" class="text-xs px-2.5 py-1 rounded-full font-bold bg-slate-100 text-slate-600 border"></span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-4 overflow-hidden p-0.5 border">
+                    <div id="progress-bar" class="bg-gradient-to-r from-amber-400 to-orange-500 h-3 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+            </div>
+
+            <!-- 質問タイトル -->
+            <div class="text-center my-4 md:my-6">
+                <h3 id="question-text" class="text-xl md:text-2xl font-black text-slate-800 leading-relaxed min-h-[3rem] flex items-center justify-center">
+                    <!-- 質問テキストが入ります -->
+                </h3>
+            </div>
+
+            <!-- 2者選択カード -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 my-6">
+                <!-- 選択肢 A -->
+                <button id="btn-option-a" onclick="answerQuestion('A')" class="btn-bounce group relative bg-gradient-to-b from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 border-2 border-amber-300 rounded-2xl p-6 flex flex-col items-center text-center justify-center space-y-3 cursor-pointer">
+                    <div id="icon-a" class="w-20 h-20 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-4xl shadow-md group-hover:scale-110 transition-transform duration-200">
+                        <i class="fa-solid fa-leaf"></i>
+                    </div>
+                    <div id="label-a" class="text-lg md:text-xl font-bold text-slate-800"></div>
+                </button>
+
+                <!-- 選択肢 B -->
+                <button id="btn-option-b" onclick="answerQuestion('B')" class="btn-bounce group relative bg-gradient-to-b from-sky-50 to-blue-50 hover:from-sky-100 hover:to-blue-100 border-2 border-sky-300 rounded-2xl p-6 flex flex-col items-center text-center justify-center space-y-3 cursor-pointer">
+                    <div id="icon-b" class="w-20 h-20 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-4xl shadow-md group-hover:scale-110 transition-transform duration-200">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <div id="label-b" class="text-lg md:text-xl font-bold text-slate-800"></div>
+                </button>
+            </div>
+
+            <!-- 前に戻るボタン -->
+            <div class="text-center mt-6">
+                <button id="prev-btn" onclick="prevQuestion()" class="text-slate-400 hover:text-slate-600 font-bold text-sm px-4 py-2 rounded-lg transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1"></i> まえのしつもんに もどる
+                </button>
+            </div>
+        </section>
+
+        <!-- 3. 結果画面（たんけんシート） -->
+        <section id="result-screen" class="hidden print-page bg-white/95 backdrop-blur rounded-3xl p-6 md:p-10 shadow-xl border-4 border-white transition-all duration-300">
+            <!-- 印刷ヘッダー (画面上は非表示、印刷時のみ) -->
+            <div class="hidden print:block text-center border-b-2 border-slate-800 pb-4 mb-6">
+                <h1 class="text-2xl font-black">としょかん たんけんシート</h1>
+                <p class="text-sm text-slate-600">じぶんの「すき」なほんを としょかんで さがしてみよう！</p>
+            </div>
+
+            <!-- 結果ヘッダー -->
+            <div class="text-center mb-8">
+                <div class="no-print inline-flex items-center gap-2 bg-amber-100 text-amber-900 px-4 py-1.5 rounded-full font-bold text-sm mb-3">
+                    <i class="fa-solid fa-award text-amber-500"></i> しんだんかんりょう！
+                </div>
+                <h2 id="result-title-prefix" class="text-lg md:text-xl font-bold text-slate-600">
+                    <!-- ルビ付き接頭辞 -->
+                </h2>
+                <div class="flex items-center justify-center gap-3 my-2">
+                    <span id="result-type-icon" class="text-4xl md:text-5xl text-amber-500"></span>
+                    <h3 id="result-type-title" class="text-3xl md:text-4xl font-black text-slate-900"></h3>
+                </div>
+                <p id="result-type-desc" class="text-slate-600 max-w-xl mx-auto mt-2 text-sm md:text-base leading-relaxed"></p>
+            </div>
+
+            <!-- 分類コード＆ハッシュタグカード -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                <div class="bg-amber-50/80 border-2 border-amber-200 rounded-2xl p-4 md:p-5 print-only-shadow-none">
+                    <div class="flex items-center gap-2 text-amber-800 font-bold mb-2">
+                        <i class="fa-solid fa-location-dot text-amber-600"></i>
+                        <span>としょかんでの さがしばしょ（NDC）</span>
+                    </div>
+                    <div id="result-ndc" class="text-2xl md:text-3xl font-black text-amber-900"></div>
+                    <p id="result-ndc-detail" class="text-xs md:text-sm text-amber-700 mt-1"></p>
+                </div>
+
+                <div class="bg-sky-50/80 border-2 border-sky-200 rounded-2xl p-4 md:p-5 print-only-shadow-none">
+                    <div class="flex items-center gap-2 text-sky-800 font-bold mb-2">
+                        <i class="fa-solid fa-hashtag text-sky-600"></i>
+                        <span>おすすめ キーワード</span>
+                    </div>
+                    <div id="result-tags" class="flex flex-wrap gap-2 mt-1"></div>
+                </div>
+            </div>
+
+            <!-- おすすめ本リスト -->
+            <div class="mb-8">
+                <h4 id="books-heading" class="text-lg md:text-xl font-bold text-slate-800 mb-4 flex items-center gap-2 border-b-2 border-amber-200 pb-2">
+                    <i class="fa-solid fa-book text-amber-500"></i> おすすめの本・定番シリーズ
+                </h4>
+                <div id="result-books" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- 書籍カード群が動的に追加されます -->
+                </div>
+            </div>
+
+            <!-- サジェスト（2番目に興味のあるジャンル） -->
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-4 md:p-5 mb-8 print-only-shadow-none">
+                <div class="flex items-center gap-2 text-slate-700 font-bold mb-1">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                    <span id="sub-result-heading">もうひとつのおすすめジャンル</span>
+                </div>
+                <div id="sub-result-content" class="text-slate-800 font-bold text-base md:text-lg"></div>
+            </div>
+
+            <!-- 操作ボタン (印刷時非表示) -->
+            <div class="no-print flex flex-col sm:flex-row gap-4 justify-center pt-4 border-t">
+                <button onclick="handlePrint()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3.5 px-6 rounded-2xl border-b-4 border-emerald-700 flex items-center justify-center gap-2 text-base">
+                    <i class="fa-solid fa-print"></i> 探検シートをいんさつする
+                </button>
+                <button onclick="restartApp()" class="btn-bounce bg-slate-500 hover:bg-slate-600 text-white font-bold py-3.5 px-6 rounded-2xl border-b-4 border-slate-700 flex items-center justify-center gap-2 text-base">
+                    <i class="fa-solid fa-rotate-right"></i> もういちど しんだんする
+                </button>
+            </div>
+        </section>
+
+        <!-- 印刷ブロック時用のカスタムモーダル -->
+        <div id="print-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl border-4 border-amber-300 text-center">
+                <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-print"></i>
+                </div>
+                <h4 class="text-xl font-bold text-slate-800 mb-2">いんさつのごあんない</h4>
+                <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+                    プレビュー画面のせいげんにより、直接印刷が開かない場合があります。<br>
+                    下のボタンから新しい画面を開くか、ブラウザの印刷機能（Ctrl + P または Cmd + P）をお試しください。
+                </p>
+                <div class="flex flex-col gap-2">
+                    <button onclick="openPrintWindow()" class="btn-bounce bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-xl text-sm">
+                        <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> 新しいがめんで開いて印刷する
+                    </button>
+                    <button onclick="closePrintModal()" class="text-slate-400 hover:text-slate-600 font-bold text-xs py-2">
+                        とじる
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="no-print text-center py-4 text-xs text-slate-500">
+        <p>ほんさがしアドベンチャー ～きみの「すき」をみつけよう！～</p>
+    </footer>
+
+    <script>
+        // カテゴリの定義
+        const CATEGORIES = {
+            NATURE: 'NATURE',
+            SCIENCE: 'SCIENCE',
+            CRAFT: 'CRAFT',
+            STORY: 'STORY',
+            HISTORY: 'HISTORY',
+            RIDDLE: 'RIDDLE'
+        };
+
+        // 診断質問データ (全8問 2者選択)
+        const QUESTIONS = [
+            {
+                // Q1
+                low: { text: "どっちの お話（はなし）や 本が すき？" },
+                mid: { text: "どっちの テーマに 興味（きょうみ）がある？" },
+                high: { text: "どちらの テーマについて 詳しく調べてみたい？" },
+                optionA: { labelLow: "生きもの や 自然", labelMid: "動物・植物・自然", labelHigh: "生物の生態や地球環境", category: CATEGORIES.NATURE, icon: "fa-leaf" },
+                optionB: { labelLow: "乗りもの や 宇宙", labelMid: "乗り物・宇宙・ロボット", labelHigh: "宇宙の開発や科学技術", category: CATEGORIES.SCIENCE, icon: "fa-rocket" }
+            },
+            {
+                // Q2
+                low: { text: "あそぶなら どっちが すき？" },
+                mid: { text: "自由研究（じゆうけんきゅう）なら どっちをやりたい？" },
+                high: { text: "探究学習で 取り組むなら どちらが面白そう？" },
+                optionA: { labelLow: "工作 や 折り紙", labelMid: "手作り工作・実験レシピ", labelHigh: "デザイン・モノづくり・調理科学", category: CATEGORIES.CRAFT, icon: "fa-scissors" },
+                optionB: { labelLow: "ワクワクする お物語", labelMid: "冒険小説・ファンタジー", labelHigh: "文学作品・SF・歴史小説", category: CATEGORIES.STORY, icon: "fa-book-bookmark" }
+            },
+            {
+                // Q3
+                low: { text: "しりたいのは どっち？" },
+                mid: { text: "調べてみたい 時代や 世界は どっち？" },
+                high: { text: "歴史や 社会のしくみについて どっちを知りたい？" },
+                optionA: { labelLow: "むかしの おはなし・歴史", labelMid: "昔話・歴史の人物・世界の国", labelHigh: "日本の歴史・世界の歴史や文化", category: CATEGORIES.HISTORY, icon: "fa-landmark" },
+                optionB: { labelLow: "なぞなぞ・クイズ", labelMid: "なぞなぞ・怪談・パズル", labelHigh: "ミステリー・論理パズル・脳トレ", category: CATEGORIES.RIDDLE, icon: "fa-puzzle-piece" }
+            },
+            {
+                // Q4
+                low: { text: "どっちの ほんを めくりたい？" },
+                mid: { text: "図書館で 開いてみたい 本は？" },
+                high: { text: "図書館で 手にとりたい 書籍は？" },
+                optionA: { labelLow: "きょうりゅう や むし", labelMid: "恐竜図鑑・昆虫のひみつ", labelHigh: "古生物の進化・解剖図鑑", category: CATEGORIES.NATURE, icon: "fa-dragon" },
+                optionB: { labelLow: "プログラミング・パソコン", labelMid: "プログラミング・実験のやり方", labelHigh: "AI・情報技術・プログラミング", category: CATEGORIES.SCIENCE, icon: "fa-laptop-code" }
+            },
+            {
+                // Q5
+                low: { text: "どっちの あそびが すき？" },
+                mid: { text: "放課後や 休日に 楽しむなら？" },
+                high: { text: "自分の趣味・関心に 近いのは？" },
+                optionA: { labelLow: "お料理（りょうり）やお菓子づくり", labelMid: "かんたん料理・手芸・デザイン", labelHigh: "本格レシピ・ライフスタイル・アート", category: CATEGORIES.CRAFT, icon: "fa-utensils" },
+                optionB: { labelLow: "スポーツ や おばけの話", labelMid: "スポーツ・怪談・ゲームの攻略", labelHigh: "スポーツのルール・怪談伝説・勝負の心理", category: CATEGORIES.RIDDLE, icon: "fa-volleyball" }
+            },
+            {
+                // Q6
+                low: { text: "どっちの かんじが すき？" },
+                mid: { text: "想像（そうぞう）するのが 好きなのは？" },
+                high: { text: "想像力を かきたてられるのは どっち？" },
+                optionA: { labelLow: "ふしぎな まほうの 世界", labelMid: "魔法や妖精の出てくる物語", labelHigh: "パラレルワールドや壮大な物語", category: CATEGORIES.STORY, icon: "fa-wand-magic-sparkles" },
+                optionB: { labelLow: "むかしの ひとの くらし", labelMid: "大昔の人々の暮らしや城", labelHigh: "世界の遺跡・伝統やSDGs課題", category: CATEGORIES.HISTORY, icon: "fa-monument" }
+            },
+            {
+                // Q7
+                low: { text: "どっちを じぶんで 作ってみたい？" },
+                mid: { text: "やってみたい チャレンジは？" },
+                high: { text: "意欲的に 取り組みたい 実践テーマは？" },
+                optionA: { labelLow: "たのしい 科学の じっけん", labelMid: "身近な材料でできる科学実験", labelHigh: "物理・化学の観察実験・研究", category: CATEGORIES.SCIENCE, icon: "fa-flask" },
+                optionB: { labelLow: "かわいい・かっこいい おりがみ", labelMid: "立体折り紙・ペーパークラフト", labelHigh: "本格建築クラフト・プロダクトデザイン", category: CATEGORIES.CRAFT, icon: "fa-shapes" }
+            },
+            {
+                // Q8
+                low: { text: "としょかんで さいごに 読みたいのは？" },
+                mid: { text: "じっくり 読みたい 本のタイプは？" },
+                high: { text: "読書ノートに 記録したい 1冊は？" },
+                optionA: { labelLow: "わくわく ぼうけんのお話", labelMid: "主人公と一緒に旅する冒険談", labelHigh: "感動的な児童文学・青春小説", category: CATEGORIES.STORY, icon: "fa-compass" },
+                optionB: { labelLow: "いきものの ひみつ図鑑", labelMid: "生きもののびっくり観察記", labelHigh: "地球環境問題や生物多様性の本", category: CATEGORIES.NATURE, icon: "fa-crow" }
+            }
+        ];
+
+        // 各カテゴリの詳細情報・おすすめ本（学年別）
+        const CATEGORY_DETAILS = {
+            NATURE: {
+                title: { low: "いきもの・しぜん・きょうりゅう タイプ", mid: "生きもの・自然・恐竜タイプ", high: "生きもの・自然探究タイプ" },
+                icon: "fa-leaf",
+                desc: {
+                    low: "どうぶつや むし、きょうりゅうが 大すきな きみ！ しぜんの ふしぎが つまった 本が おすすめだよ。",
+                    mid: "生きものの 生態や 恐竜のひみつに 興味があるね！ 図鑑や 観察の記録本を 探してみよう。",
+                    high: "生物の多様性や 地球の環境、動植物の奥深い生存戦略に関する本が あなたの探究心を刺激します。"
+                },
+                ndc: "4類（自然科学） / 48類（動物） / 45類（地球科学）",
+                ndcDetail: "本棚の「4」のコーナー（450:地質・恐竜、480:動物、460:生物）をみてみよう！",
+                tags: ["#生きもの図鑑", "#恐竜のひみつ", "#昆虫観察", "#水族館のなかま", "#地球のふしぎ"],
+                books: {
+                    low: [
+                        { title: "ざんねんないきもの事典 シリーズ", publisher: "高橋書店", desc: "おもしろい生きもののひみつがいっぱい！" },
+                        { title: "かいけつゾロリのきょうりゅうたんけん", publisher: "ポプラ社", desc: "大人気のゾロリと恐竜のわくわく大冒険！" },
+                        { title: "小学館の図鑑NEO［新版］恐竜", publisher: "小学館", desc: "迫力満点の写真とイラストで恐竜に詳しくなれる！" }
+                    ],
+                    mid: [
+                        { title: "ざんねんないきもの事典 シリーズ", publisher: "高橋書店", desc: "生きものの「意外な一面」を学べる定番ベストセラー！" },
+                        { title: "わけあって絶滅しました。", publisher: "ダイヤモンド社", desc: "絶滅した生物たちが自ら理由を語るおもしろ事典。" },
+                        { title: "シートン動物記（児童版）", publisher: "各社", desc: "野生動物たちのリアルな生き様を描いた名作。" }
+                    ],
+                    high: [
+                        { title: "はたらく細胞 シリーズ", publisher: "講談社", desc: "体の中の細胞たちの活躍を楽しく深く知る！" },
+                        { title: "ダーウィンが来た！ポプラ社版", publisher: "ポプラ社", desc: "NHKの番組から生まれた驚きの生きもの観察記。" },
+                        { title: "環境問題・SDGsについて調べる本", publisher: "各社", desc: "地球の未来と生きものの関係を考える探究本。" }
+                    ]
+                }
+            },
+            SCIENCE: {
+                title: { low: "かがく・のりもの・うちゅう タイプ", mid: "科学・宇宙・乗りものタイプ", high: "科学・テクノロジー探究タイプ" },
+                icon: "fa-rocket",
+                desc: {
+                    low: "ロケットや でんしゃ、じっけんが 大すきな きみ！ かがくの ふしぎな 本を よんでみよう！",
+                    mid: "科学実験や 宇宙のなぞ、プログラミングに 興味津々！ しらべ学習にも ぴったりの ジャンルだよ。",
+                    high: "最新のテクノロジーや宇宙物理、プログラミングやAIのしくみなど、論理的思考を高める本がおすすめです。"
+                },
+                ndc: "4類（自然科学） / 5類（技術・工学） / 0類（情報）",
+                ndcDetail: "本棚の「4」（440:宇宙、400:科学）や「5」（530:乗りもの）「0」（007:情報）をチェック！",
+                tags: ["#宇宙のひみつ", "#のりもの図鑑", "#科学実験", "#プログラミング", "#AIと未来"],
+                books: {
+                    low: [
+                        { title: "科学漫画サバイバル シリーズ", publisher: "朝日新聞出版", desc: "ハラハラドキドキのストーリーで科学がわかる！" },
+                        { title: "はたらくくるま（えほん）", publisher: "各社", desc: "かっこいい乗りものが大集合！" },
+                        { title: "実験対決 シリーズ", publisher: "朝日新聞出版", desc: "科学の実験でライバルと対決する大人気漫画！" }
+                    ],
+                    mid: [
+                        { title: "科学漫画サバイバル シリーズ", publisher: "朝日新聞出版", desc: "宇宙や深海などさまざまなテーマの科学知識が身につく！" },
+                        { title: "Scratchでたのしむプログラミング", publisher: "各社", desc: "自分でゲームやアニメーションを作る第一歩！" },
+                        { title: "10分で読める科学のふしぎ", publisher: "学研", desc: "身の回りの「なぜ？」がすっきり解決！" }
+                    ],
+                    high: [
+                        { title: "空想科学読本 シリーズ", publisher: "KADOKAWA", desc: "アニメや漫画の現象を科学的に大マジメに検証！" },
+                        { title: "図鑑MOVE 宇宙", publisher: "講談社", desc: "宇宙の始まりから最新の宇宙探査まで詳しく学べる。" },
+                        { title: "自分で作るプログラミング思考", publisher: "各社", desc: "論理的思考力を養う本格的入門書。" }
+                    ]
+                }
+            },
+            CRAFT: {
+                title: { low: "こうさく・りょうり・デザイン タイプ", mid: "工作・折り紙・料理タイプ", high: "モノづくり・ライフデザインタイプ" },
+                icon: "fa-scissors",
+                desc: {
+                    low: "てづくりや お料理（りょうり）が 大すきな きみ！ つくる たのしみが つまった 本を さがそう！",
+                    mid: "おりがみや 手芸、かんたん料理の レシピ本など、自分で 作って楽しめる 本が おすすめ！",
+                    high: "本格的な料理レシピ、プロダクトデザイン、建築やDIYなど、創造力を形にする本がピッタリです。"
+                },
+                ndc: "5類（技術・家庭科） / 7類（芸術・工作）",
+                ndcDetail: "本棚の「590」（家庭科・料理）や「750」（工芸・工作）のコーナーをみてみよう！",
+                tags: ["#おりがみ", "#手作り工作", "#子ども料理", "#イラストの描き方", "#DIY"],
+                books: {
+                    low: [
+                        { title: "ワクワクかんたん工作", publisher: "各社", desc: "身近な材料ですぐできる楽しい工作がいっぱい！" },
+                        { title: "ちいさな料理人のレシピ本", publisher: "各社", desc: "包丁をつかわない安心のお料理本。" },
+                        { title: "おりがみ大百科", publisher: "各社", desc: "かわいい動物やかっこいい乗りものが折れるよ！" }
+                    ],
+                    mid: [
+                        { title: "カミワザおりがみ シリーズ", publisher: "各社", desc: "立体的なすごい作品に挑戦できる！" },
+                        { title: "自分で作れる！小学生のおべんとう・おやつ", publisher: "各社", desc: "休日にチャレンジしたくなるレシピ集。" },
+                        { title: "イラストの描き方レッスン", publisher: "各社", desc: "キャラクターや可愛いイラストの上手な描き方。" }
+                    ],
+                    high: [
+                        { title: "本気のペーパークラフト＆建築", publisher: "各社", desc: "精密で美しい立体作品にチャレンジ！" },
+                        { title: "探究！デザインのしくみ", publisher: "各社", desc: "日常の中にあるグッドデザインの秘密を探る。" },
+                        { title: "プロが教える基本のお菓子・料理", publisher: "各社", desc: "科学的な原理も学べる本格クッキング本。" }
+                    ]
+                }
+            },
+            STORY: {
+                title: { low: "ものがたり・ぼうけん タイプ", mid: "物語・ファンタジー・冒険タイプ", high: "文学・フィクション探究タイプ" },
+                icon: "fa-book-bookmark",
+                desc: {
+                    low: "ほんを読むのが 大すきな きみ！ わくわくする ぼうけんや ふしぎな お話（はなし）を よもう！",
+                    mid: "ファンタジーや 冒険小説、友情の物語など、本の世界に どっぷり浸かれる 名作がおすすめ！",
+                    high: "児童文学の名作から話題の青春小説、SFまで、ストーリーに引き込まれる読書体験を楽しもう。"
+                },
+                ndc: "9類（文学・物語）",
+                ndcDetail: "本棚の「9」（913:日本の物語、933:外国の物語）のコーナーをみてみよう！",
+                tags: ["#冒険小説", "#ファンタジー", "#ゾロリ", "#銭天堂", "#5分後に意外な結末"],
+                books: {
+                    low: [
+                        { title: "かいけつゾロリ シリーズ", publisher: "ポプラ社", desc: "いたずらの王者ゾロリの大人気冒険物語！" },
+                        { title: "エルマーのぼうけん", publisher: "福音館書店", desc: "りゅうを助けるために旅立つ不朽の名作！" },
+                        { title: "ルルとララ シリーズ", publisher: "岩崎書店", desc: "かわいいお菓子作りとお話が楽しめる！" }
+                    ],
+                    mid: [
+                        { title: "ふしぎ駄菓子屋 銭天堂", publisher: "偕成社", desc: "願いが叶う駄菓子をめぐるふしぎな物語！" },
+                        { title: "5分後に意外な結末 シリーズ", publisher: "学研", desc: "短時間で読めて、ラストに驚きが待っている！" },
+                        { title: "ハリー・ポッターと賢者の石", publisher: "静山社", desc: "魔法学校で繰り広げられる世界最高峰のファンタジー。" }
+                    ],
+                    high: [
+                        { title: "5分後に意外な結末 シリーズ", publisher: "学研", desc: "朝読書にもピッタリの短編ミステリー＆ドラマ。" },
+                        { title: "かがみの孤城", publisher: "ポプラ社", desc: "学校に行けない中学生たちが繰り広げる感動の体験。" },
+                        { title: "ぼくらの七日間戦争（ぼくらシリーズ）", publisher: "角川つばさ文庫", desc: "大人たちに立ち向かう爽快なアクション物語！" }
+                    ]
+                }
+            },
+            HISTORY: {
+                title: { low: "むかしの おはなし・れきし タイプ", mid: "昔話・歴史・世界の国々タイプ", high: "歴史・社会・文化探究タイプ" },
+                icon: "fa-landmark",
+                desc: {
+                    low: "むかしの くらしや 世界の お話（はなし）に 興味（きょうみ）が あるね！ たのしい お話を よもう！",
+                    mid: "歴史上の 武将や 偉人、世界の国々の くらしや 文化について 詳しく学べる 本が おすすめ！",
+                    high: "日本史・世界史の流れ、偉人の生涯、各国の文化や国際情勢を深く学べる本が探究学習に役立ちます。"
+                },
+                ndc: "2類（歴史・地理） / 3類（社会） / 38類（民俗・昔話）",
+                ndcDetail: "本棚の「2」（210:日本史、280:伝記）や「3」（380:昔話・伝説）をみてみよう！",
+                tags: ["#日本の歴史", "#世界の国々", "#伝記・偉人", "#日本の昔話", "#世界の文化"],
+                books: {
+                    low: [
+                        { title: "日本の昔話（まんが絵本）", publisher: "各社", desc: "桃太郎やかぐや姫など、定番の昔話を楽しく！" },
+                        { title: "世界の国々えほん", publisher: "各社", desc: "いろいろな国の挨拶やくらしを知ろう。" },
+                        { title: "コミック版 世界の伝記 シリーズ", publisher: "ポプラ社", desc: "偉人たちの子供時代と活躍がわかる！" }
+                    ],
+                    mid: [
+                        { title: "角川まんが学習シリーズ 日本の歴史", publisher: "KADOKAWA", desc: "まんがで楽しく歴史の流れがよくわかる！" },
+                        { title: "伝記 シリーズ（野口英世・織田信長など）", publisher: "ポプラ社", desc: "困難を乗り越えた有名人のドラマチックな生涯。" },
+                        { title: "マップス 新・世界図絵", publisher: "徳間書店", desc: "イラストで見る世界の国々の文化と地誌。" }
+                    ],
+                    high: [
+                        { title: "まんが学習シリーズ 世界の歴史", publisher: "KADOKAWA", desc: "グローバルな歴史の繋がりを深く理解できる。" },
+                        { title: "10代からのSDGs・国際理解", publisher: "各社", desc: "世界が抱える課題と自分の暮らしを結びつける。" },
+                        { title: "歴史を動かした合戦・出来事事典", publisher: "各社", desc: "戦国時代や幕末の裏側を詳しく探究！" }
+                    ]
+                }
+            },
+            RIDDLE: {
+                title: { low: "なぞなぞ・かいだん・スポーツ タイプ", mid: "なぞなぞ・怪談・スポーツ・パズルタイプ", high: "思考パズル・怪談・スポーツ探究タイプ" },
+                icon: "fa-puzzle-piece",
+                desc: {
+                    low: "なぞなぞ や おばけ、スポーツが 大すきな きみ！ みんなで あそべる 本が おすすめ！",
+                    mid: "友達と盛り上がれる なぞなぞ本や、ゾクゾクする 怪談、スポーツの ルールブックを探そう！",
+                    high: "ひらめき力を鍛える論理パズル、怪談や都市伝説の考察、スポーツの上達法や戦術本が楽しめます。"
+                },
+                ndc: "7類（芸術・体育・娯楽） / 0類（総記・クイズ）",
+                ndcDetail: "本棚の「790」（ゲーム・娯楽）や「780」（スポーツ）のコーナーをみてみよう！",
+                tags: ["#なぞなぞ", "#学校の怪談", "#頭の体操", "#スポーツ上達", "#推理パズル"],
+                books: {
+                    low: [
+                        { title: "あたまがよくなる！なぞなぞ1000", publisher: "各社", desc: "家族や友達に問題を出して盛り上がろう！" },
+                        { title: "学校の怪談（えほん・児童書）", publisher: "各社", desc: "ちょっぴり怖いけど目が離せないお話！" },
+                        { title: "はじめてのスポーツ図鑑", publisher: "各社", desc: "サッカーや野球のルールが楽しくわかる。" }
+                    ],
+                    mid: [
+                        { title: "名探偵コナン 推理パズル シリーズ", publisher: "小学館", desc: "コナンと一緒に事件を解決！頭を使うクイズ集。" },
+                        { title: "学校の怪談 シリーズ", publisher: "ポプラ社", desc: "全国の学校に伝わるゾクッとする怪談話。" },
+                        { title: "スポーツ上達バイブル（各種）", publisher: "各社", desc: "コツを掴んで運動が得意になる解説書。" }
+                    ],
+                    high: [
+                        { title: "東大思考パズル・頭の体操", publisher: "各社", desc: "論理的ひらめき力と発想力を試す問題集！" },
+                        { title: "日本の怪談・都市伝説大百科", publisher: "各社", desc: "伝承や怪異の背景を読み解く深掘り本。" },
+                        { title: "勝つためのスポーツ心理＆戦術", publisher: "各社", desc: "心構えやチームワークの理論を学ぶ。" }
+                    ]
+                }
+            }
+        };
+
+        // アプリケーションの状態管理
+        let state = {
+            grade: 1, // 1~6
+            currentQuestionIndex: 0,
+            scores: {
+                [CATEGORIES.NATURE]: 0,
+                [CATEGORIES.SCIENCE]: 0,
+                [CATEGORIES.CRAFT]: 0,
+                [CATEGORIES.STORY]: 0,
+                [CATEGORIES.HISTORY]: 0,
+                [CATEGORIES.RIDDLE]: 0
+            },
+            history: [] // 過去の選択履歴
+        };
+
+        // 学年選択
+        function selectGrade(gradeNum) {
+            state.grade = gradeNum;
+            state.currentQuestionIndex = 0;
+            state.scores = {
+                [CATEGORIES.NATURE]: 0,
+                [CATEGORIES.SCIENCE]: 0,
+                [CATEGORIES.CRAFT]: 0,
+                [CATEGORIES.STORY]: 0,
+                [CATEGORIES.HISTORY]: 0,
+                [CATEGORIES.RIDDLE]: 0
+            };
+            state.history = [];
+
+            document.getElementById('grade-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            // 学年バッジの更新
+            const badge = document.getElementById('grade-badge');
+            if (gradeNum <= 2) {
+                badge.innerText = `${gradeNum}ねんせい（ていがくねん）`;
+            } else if (gradeNum <= 4) {
+                badge.innerText = `${gradeNum}年生（中学年）`;
+            } else {
+                badge.innerText = `${gradeNum}年生（高学年）`;
+            }
+
+            renderQuestion();
+        }
+
+        // 質問の描画
+        function renderQuestion() {
+            const q = QUESTIONS[state.currentQuestionIndex];
+            const total = QUESTIONS.length;
+
+            // プログレスバー
+            const percent = ((state.currentQuestionIndex + 1) / total) * 100;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            // 質問番号テキスト
+            const qNumEl = document.getElementById('question-number');
+            if (state.grade <= 2) {
+                qNumEl.innerText = `しつもん ${state.currentQuestionIndex + 1} / ${total}`;
+            } else {
+                qNumEl.innerText = `質問 ${state.currentQuestionIndex + 1} / ${total}`;
+            }
+
+            // 学年に応じたテキスト切り替え
+            const qTextEl = document.getElementById('question-text');
+            const labelA = document.getElementById('label-a');
+            const labelB = document.getElementById('label-b');
+            const iconA = document.getElementById('icon-a');
+            const iconB = document.getElementById('icon-b');
+
+            if (state.grade <= 2) {
+                // 低学年：ひらがな・ルビ多用
+                qTextEl.innerHTML = createRubyText(q.low.text);
+                labelA.innerHTML = createRubyText(q.optionA.labelLow);
+                labelB.innerHTML = createRubyText(q.optionB.labelLow);
+            } else if (state.grade <= 4) {
+                // 中学年：調べ学習意識
+                qTextEl.innerText = q.mid.text;
+                labelA.innerText = q.optionA.labelMid;
+                labelB.innerText = q.optionB.labelMid;
+            } else {
+                // 高学年：探究学習・大人っぽい表現
+                qTextEl.innerText = q.high.text;
+                labelA.innerText = q.optionA.labelHigh;
+                labelB.innerText = q.optionB.labelHigh;
+            }
+
+            // アイコンの設定
+            iconA.innerHTML = `<i class="fa-solid ${q.optionA.icon}"></i>`;
+            iconB.innerHTML = `<i class="fa-solid ${q.optionB.icon}"></i>`;
+
+            // 最初の質問では「戻る」ボタンを非表示
+            const prevBtn = document.getElementById('prev-btn');
+            if (state.currentQuestionIndex === 0) {
+                prevBtn.classList.add('invisible');
+            } else {
+                prevBtn.classList.remove('invisible');
+            }
+        }
+
+        // ひらがなルビ自動付与ヘルパー（簡易変換用）
+        function createRubyText(text) {
+            // 基本的な漢字にルビを添える処理
+            return text
+                .replace("話", "<ruby>話<rt>はな</rt></ruby>")
+                .replace("本", "<ruby>本<rt>ほん</rt></ruby>")
+                .replace("興味", "<ruby>興味<rt>きょうみ</rt></ruby>")
+                .replace("自然", "<ruby>自然<rt>しぜん</rt></ruby>")
+                .replace("宇宙", "<ruby>宇宙<rt>うちゅう</rt></ruby>")
+                .replace("工作", "<ruby>工作<rt>こうさく</rt></ruby>")
+                .replace("歴史", "<ruby>歴史<rt>れきし</rt></ruby>")
+                .replace("時代", "<ruby>時代<rt>じだい</rt></ruby>")
+                .replace("世界", "<ruby>世界<rt>せかい</rt></ruby>")
+                .replace("恐竜", "<ruby>恐竜<rt>きょうりゅう</rt></ruby>")
+                .replace("研究", "<ruby>研究<rt>けんきゅう</rt></ruby>")
+                .replace("実験", "<ruby>実験<rt>じっけん</rt></ruby>")
+                .replace("料理", "<ruby>料理<rt>りょうり</rt></ruby>")
+                .replace("想像", "<ruby>想像<rt>そうぞう</rt></ruby>")
+                .replace("挑戦", "<ruby>挑戦<rt>ちょうせん</rt></ruby>")
+                .replace("観察", "<ruby>観察<rt>かんさつ</rt></ruby>");
+        }
+
+        // 回答処理
+        function answerQuestion(choice) {
+            const q = QUESTIONS[state.currentQuestionIndex];
+            const selectedOption = choice === 'A' ? q.optionA : q.optionB;
+
+            // スコア加算
+            state.scores[selectedOption.category]++;
+            state.history.push({ questionIndex: state.currentQuestionIndex, choice: choice, category: selectedOption.category });
+
+            if (state.currentQuestionIndex < QUESTIONS.length - 1) {
+                state.currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                // 診断完了 -> 結果画面へ
+                showResult();
+            }
+        }
+
+        // 前の質問に戻る
+        function prevQuestion() {
+            if (state.currentQuestionIndex > 0) {
+                const lastHistory = state.history.pop();
+                if (lastHistory) {
+                    state.scores[lastHistory.category]--;
+                }
+                state.currentQuestionIndex--;
+                renderQuestion();
+            }
+        }
+
+        // 結果の計算と表示
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            // スコア順にソート
+            const sortedCategories = Object.keys(state.scores).sort((a, b) => state.scores[b] - state.scores[a]);
+            const topCategoryKey = sortedCategories[0];
+            const subCategoryKey = sortedCategories[1];
+
+            const topCat = CATEGORY_DETAILS[topCategoryKey];
+            const subCat = CATEGORY_DETAILS[subCategoryKey];
+
+            // 学年層（low, mid, high）判定
+            let level = 'low';
+            if (state.grade >= 3 && state.grade <= 4) level = 'mid';
+            if (state.grade >= 5) level = 'high';
+
+            // 接頭辞（ルビ付き対応）
+            const prefixEl = document.getElementById('result-title-prefix');
+            if (state.grade <= 2) {
+                prefixEl.innerHTML = "きみに ぴったりの <ruby>探検<rt>たんけん</rt></ruby>タイプは…";
+            } else if (state.grade <= 4) {
+                prefixEl.innerText = "あなたにおすすめの 図書館探検タイプは…";
+            } else {
+                prefixEl.innerText = "あなたの関心・探究テーマにマッチするタイプは…";
+            }
+
+            // タイプタイトル＆アイコン
+            document.getElementById('result-type-icon').innerHTML = `<i class="fa-solid ${topCat.icon}"></i>`;
+            document.getElementById('result-type-title').innerText = topCat.title[level];
+            document.getElementById('result-type-desc').innerText = topCat.desc[level];
+
+            // NDC＆詳細
+            document.getElementById('result-ndc').innerText = topCat.ndc;
+            document.getElementById('result-ndc-detail').innerText = topCat.ndcDetail;
+
+            // ハッシュタグ
+            const tagsContainer = document.getElementById('result-tags');
+            tagsContainer.innerHTML = '';
+            topCat.tags.forEach(tag => {
+                const span = document.createElement('span');
+                span.className = "bg-sky-100 text-sky-800 font-bold text-xs md:text-sm px-3 py-1 rounded-full border border-sky-300";
+                span.innerText = tag;
+                tagsContainer.appendChild(span);
+            });
+
+            // おすすめの本（学年別）
+            const booksContainer = document.getElementById('result-books');
+            booksContainer.innerHTML = '';
+            const bookList = topCat.books[level];
+
+            bookList.forEach(book => {
+                const card = document.createElement('div');
+                card.className = "bg-amber-50/50 border-2 border-amber-200 rounded-2xl p-4 flex flex-col justify-between print-only-shadow-none";
+                card.innerHTML = `
+                    <div>
+                        <span class="text-[10px] font-bold bg-amber-200 text-amber-900 px-2 py-0.5 rounded">
+                            ${book.publisher}
+                        </span>
+                        <h5 class="text-base md:text-lg font-black text-slate-800 my-2 leading-snug">
+                            ${book.title}
+                        </h5>
+                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed">
+                            ${book.desc}
+                        </p>
+                    </div>
+                `;
+                booksContainer.appendChild(card);
+            });
+
+            // サジェスト（2番目）
+            const subHeading = document.getElementById('sub-result-heading');
+            const subContent = document.getElementById('sub-result-content');
+
+            if (state.grade <= 2) {
+                subHeading.innerText = "もうひとつのおすすめ ジャンル";
+            } else {
+                subHeading.innerText = "次に興味がありそうな サジェストジャンル";
+            }
+
+            subContent.innerHTML = `
+                <div class="flex items-center gap-2 mt-1">
+                    <i class="fa-solid ${subCat.icon} text-amber-600"></i>
+                    <span>${subCat.title[level]}</span>
+                </div>
+            `;
+
+            // 画面トップへスクロール
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 最初からやり直す
+        function restartApp() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('grade-screen').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // 印刷処理（プレビュー画面対策付き）
+        function handlePrint() {
+            try {
+                // 通常の印刷呼び出し
+                window.print();
+            } catch (e) {
+                console.warn('Direct print blocked by iframe context:', e);
+                showPrintModal();
+            }
+        }
+
+        // モーダルの表示・非表示
+        function showPrintModal() {
+            document.getElementById('print-modal').classList.remove('hidden');
+        }
+
+        function closePrintModal() {
+            document.getElementById('print-modal').classList.add('hidden');
+        }
+
+        // 印刷用に別ウィンドウ/タブを開いてコンテンツを流し込む処理
+        function openPrintWindow() {
+            closePrintModal();
+            const resultHtml = document.getElementById('result-screen').outerHTML;
+            const headHtml = document.head.innerHTML;
+            
+            const printWin = window.open('', '_blank');
+            if (printWin) {
+                printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="ja">
+                    <head>
+                        ${headHtml}
+                        <style>
+                            /* 印刷専用調整 */
+                            body { background: white !important; padding: 20px; }
+                            .no-print { display: none !important; }
+                            .print-page { display: block !important; box-shadow: none !important; border: none !important; }
+                        </style>
+                    </head>
+                    <body>
+                        ${resultHtml}
+                        <script>
+                            window.onload = function() {
+                                // 要素の非表示を印刷用に調整
+                                const resultScreen = document.getElementById('result-screen');
+                                if (resultScreen) resultScreen.classList.remove('hidden');
+                                setTimeout(() => {
+                                    window.print();
+                                }, 300);
+                            };
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+            } else {
+                alert('ポップアップがブロックされました。ブラウザの設定をご確認いただくか、通常のブラウザ印刷（Ctrl+P）をお使いください。');
+            }
+        }
+    </script>
+</body>
+</html>
